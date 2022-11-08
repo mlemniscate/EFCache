@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  efsecondlevelcache:
+    image: ef-second-level-cache
+    ports:
+      - "80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+   
+  sqldb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment: 
+        - SA_PASSWORD=Qwerty*2607548
+        - ACCEPT_EULA=Y
+    ports:
+        - "1550:1433"
+    container_name: sqldb
