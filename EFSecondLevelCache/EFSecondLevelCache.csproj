@@ -22,6 +22,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="7.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="6.16.1" />
@@ -29,7 +30,6 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="Infrustructure\" />
   </ItemGroup>
 
 </Project>

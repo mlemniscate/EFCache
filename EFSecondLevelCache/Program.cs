@@ -1,6 +1,5 @@
-
-
-using EFSecondLevelCache.Infrustructure;
+using EFSecondLevelCache.Infrastructure;
+using EFSecondLevelCache.Infrastructure.Employees;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +13,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddMemoryCache();
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 var app = builder.Build();
 
