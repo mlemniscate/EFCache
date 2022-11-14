@@ -1,3 +1,5 @@
+using EFCoreSecondLevelCacheInterceptor;
+using EFSecondLevelCache;
 using EFSecondLevelCache.Infrastructure;
 using EFSecondLevelCache.Infrastructure.Employees;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +13,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+// EFSecondLevelCache service adding
+builder.Services.AddEFSecondLevelCache(options =>
+{
+    options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_");
+    options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
+});
+
+// builder.Services.AddDbContext<AppDbContext>(opt =>
+//     opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddConfiguredMsSqlDbContext(builder.Configuration.GetConnectionString("Default"));
 
 builder.Services.AddMemoryCache();
 

@@ -3,9 +3,11 @@ using EFSecondLevelCache.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.Metrics;
+using EFCoreSecondLevelCacheInterceptor;
 using EFSecondLevelCache.Infrastructure;
 using EFSecondLevelCache.Infrastructure.Employees;
 using Z.EntityFramework.Plus;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFSecondLevelCache.Controllers
 {
@@ -36,13 +38,15 @@ namespace EFSecondLevelCache.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAllByInMemoryCache()
+        public ActionResult GetAllByInterceptor()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            var employees = repository.GetInMemoryCachedEmployees();
+            var employees = context.Employees.Where(x => x.Id > 0).OrderBy(x => x.Id)
+                .FromCache().ToList();
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedTicks} t => Count = {employees.Count}");
+
             return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}");
         }
 
@@ -65,35 +69,35 @@ namespace EFSecondLevelCache.Controllers
             Console.WriteLine(context.GetHashCode());
             return Ok($"Execution Time: {watch.ElapsedTicks} ticks");
         }
-
+        
         [HttpGet]
-        public ActionResult GetAllFromCache()
+        public ActionResult GetAllEmployeesByZFramework()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            var employees = context.Employees.FromCache().ToList();
+            var employees = context.Employees.FromCache(TableName.Employees.Value).ToList();
             watch.Stop();
-            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}");
-            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}");
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
-        // [HttpGet]
-        // public ActionResult GetEmployeesByCompiledQuery(string letter)
-        // {
-        //     var watch = new System.Diagnostics.Stopwatch();
-        //     watch.Start();
-        //     var employees = context.GetEmployees(letter);
-        //     watch.Stop();
-        //     Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
-        //     return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms");
-        // }
-
         [HttpGet]
-        public ActionResult GetEmployeesWithoutCompiledQuery(string letter)
+        public ActionResult GetEmployeeByIdZFramework(int id)
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            var employees = context.Employees.Where(e => e.FirstName.Contains(letter) || e.LastName.Contains(letter));
+            var employees = context.Employees.DeferredFirst().FromCache(TableName.Employees.Value);
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms");
+        }
+
+        [HttpGet]
+        public ActionResult GetEmployeesByInMemoryCache(string letter)
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var employees = repository.GetInMemoryCachedEmployees();
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
             return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms");
@@ -121,7 +125,8 @@ namespace EFSecondLevelCache.Controllers
             context.SaveChanges();
             watch.Stop();
             Console.WriteLine($"Execution Time For Adding to DB: {watch.ElapsedMilliseconds} ms");
-            QueryCacheManager.ExpireAll();
+
+            QueryCacheManager.ExpireTag(TableName.Employees.Value);
             return Ok();
         }
 
