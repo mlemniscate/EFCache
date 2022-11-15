@@ -14,20 +14,22 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // EFSecondLevelCache service adding
-builder.Services.AddEFSecondLevelCache(options =>
-{
-    options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_");
-    options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
-});
+// builder.Services.AddEFSecondLevelCache(options =>
+// {
+//     options.UseMemoryCacheProvider().DisableLogging(false).UseCacheKeyPrefix("EF_");
+//     options.CacheAllQueries(CacheExpirationMode.Absolute, TimeSpan.FromMinutes(30));
+// });
 
-// builder.Services.AddDbContext<AppDbContext>(opt =>
-//     opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddConfiguredMsSqlDbContext(builder.Configuration.GetConnectionString("Default"));
+// builder.Services.AddConfiguredMsSqlDbContext(builder.Configuration.GetConnectionString("Default"));
 
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+builder.Services.AddResponseCaching();
 
 var app = builder.Build();
 
@@ -44,6 +46,8 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseResponseCaching();
 
 app.MapControllers();
 

@@ -38,7 +38,53 @@ namespace EFSecondLevelCache.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetAllCount()
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var count = context.Employees.Count();
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {count}");
+            watch.Reset();
+            watch.Start();
+            var count2 = context.Employees.DeferredCount().FromCache();
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {count}");
+            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {count}");
+        }
+
+        [HttpGet]
+        public ActionResult GetAllEmails()
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var count = context.Employees.Select(e => e.Email).ToList();
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {count}");
+            watch.Reset();
+            watch.Start();
+            var count2 = context.Employees.Select(e => new { e.Email }).FromCache().ToList();
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {count}");
+            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {count}");
+        }
+
+        [HttpGet]
         public ActionResult GetAllByInterceptor()
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var employees = context.Employees.Where(x => x.Id > 0).OrderBy(x => x.Id)
+                .FromCache().ToList();
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.ElapsedTicks} t => Count = {employees.Count}");
+
+            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}");
+        }
+
+        [HttpGet]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
+        public ActionResult GetAllByApiCaching()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
