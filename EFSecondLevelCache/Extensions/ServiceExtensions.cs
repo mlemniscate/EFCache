@@ -2,9 +2,9 @@
 using EFSecondLevelCache.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFSecondLevelCache;
+namespace EFSecondLevelCache.Extensions;
 
-public static class MsSqlServiceCollectionExtensions
+public static class ServiceExtensions
 {
     public static IServiceCollection AddConfiguredMsSqlDbContext(this IServiceCollection services, string? connectionString)
     {
@@ -20,6 +20,18 @@ public static class MsSqlServiceCollectionExtensions
                             .MigrationsAssembly(typeof(MsSqlServiceCollectionExtensions).Assembly.FullName);
                     })
                 .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));
+        return services;
+    }
+
+    public static IServiceCollection AddCors(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", options =>
+                options.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin());
+        });
         return services;
     }
 }
