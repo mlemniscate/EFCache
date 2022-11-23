@@ -33,7 +33,7 @@ namespace EFSecondLevelCache.Controllers
             watch.Start();
             var employees = repository.GetEmployees();
             watch.Stop();
-            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}" );
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}");
             return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}");
         }
 
@@ -83,48 +83,77 @@ namespace EFSecondLevelCache.Controllers
         }
 
         [HttpGet]
-        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
-        public ActionResult GetAllByApiCaching()
+        [ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any)]
+        // VaryByQueryKeys = new string[] { "id" })]
+        public IActionResult GetByIdApiCaching(int id)
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            var employees = context.Employees.Where(x => x.Id > 0).OrderBy(x => x.Id)
-                .FromCache().ToList();
+            var employe = context.Employees//.Where(x => x.Id == id)
+                .FromCache().First();
             watch.Stop();
-            Console.WriteLine($"Execution Time: {watch.ElapsedTicks} t => Count = {employees.Count}");
+            Console.WriteLine($"Execution Time: {watch.ElapsedTicks} t ");
 
-            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms => Count = {employees.Count}");
+            return Ok(employe);
         }
 
         [HttpGet]
-        public ActionResult GetById(int id)
+        public ActionResult GetByIdFirstLevel(int id)
         {
-            
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             var employe = context.Employees.Find(id);
             watch.Stop();
             Console.WriteLine($"Execution Time 1: {watch.ElapsedTicks} ticks");
-            employe.FirstName = "Milad";
-            context.SaveChanges();
             watch.Reset();
             watch.Start();
-            context.Employees.Find(id);
+            employe = context.Employees.Find(id);
             watch.Stop();
             Console.WriteLine($"Execution Time 2: {watch.ElapsedTicks} ticks");
             Console.WriteLine(context.GetHashCode());
-            return Ok($"Execution Time: {watch.ElapsedTicks} ticks");
+            return Ok(employe);
         }
-        
+
         [HttpGet]
-        public ActionResult GetAllEmployeesByZFramework()
+        public ActionResult GetAllFirstLevel()
+        {
+
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var employe = context.Employees.ToList();
+            watch.Stop();
+            Console.WriteLine($"Execution Time 1: {watch.ElapsedMilliseconds} ms");
+            watch.Reset();
+            watch.Start();
+            employe = context.Employees.ToList();
+            watch.Stop();
+            Console.WriteLine($"Execution Time 2: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine(context.GetHashCode());
+            return Ok();
+        }
+
+        [HttpGet]
+        public IActionResult GetAllEmployeesByZFramework()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             var employees = context.Employees.FromCache(TableName.Employees.Value).ToList();
             watch.Stop();
             Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
-            return Ok($"Execution Time: {watch.ElapsedMilliseconds} ms");
+            return Ok();
+        }
+
+        [HttpGet]
+        public IActionResult GetAllFilteredEmployeesByZFramework(string searchText)
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            var employees = context.Employees.Where(e => e.FirstName.Contains(searchText)
+                                                         || e.LastName.Contains(searchText) ||
+                                                         (e.FirstName + " "+ e.LastName).Contains(searchText)).FromCache().ToList();
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
+            return Ok(employees);
         }
 
         [HttpGet]
@@ -162,7 +191,7 @@ namespace EFSecondLevelCache.Controllers
                 .RuleFor(e => e.LastName, f => f.Name.LastName())
                 .RuleFor(e => e.Email, (f, e) => f.Internet.Email(e.FirstName, e.LastName));
             watch.Stop();
-            var employees = fakeEmployees.Generate(100_000).ToList();
+            var employees = fakeEmployees.Generate(1_000).ToList();
             Console.WriteLine($"Execution Time For Faker: {watch.ElapsedMilliseconds} ms");
 
             watch.Reset();

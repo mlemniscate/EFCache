@@ -17,13 +17,13 @@ public static class ServiceExtensions
                         sqlServerOptionsBuilder
                             .CommandTimeout((int)TimeSpan.FromMinutes(3).TotalSeconds)
                             .EnableRetryOnFailure()
-                            .MigrationsAssembly(typeof(MsSqlServiceCollectionExtensions).Assembly.FullName);
+                            .MigrationsAssembly(typeof(Program).Assembly.FullName);
                     })
                 .AddInterceptors(serviceProvider.GetRequiredService<SecondLevelCacheInterceptor>()));
         return services;
     }
 
-    public static IServiceCollection AddCors(this IServiceCollection services)
+    public static IServiceCollection AddMyCors(this IServiceCollection services)
     {
         services.AddCors(options =>
         {

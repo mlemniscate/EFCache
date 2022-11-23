@@ -1,5 +1,4 @@
-using EFCoreSecondLevelCacheInterceptor;
-using EFSecondLevelCache;
+using EFSecondLevelCache.Extensions;
 using EFSecondLevelCache.Infrastructure;
 using EFSecondLevelCache.Infrastructure.Employees;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +11,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddMyCors();
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // EFSecondLevelCache service adding
@@ -33,8 +34,6 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 builder.Services.AddResponseCaching();
 
-builder.Services.AddCors();
-
 var app = builder.Build();
 
 using (var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<AppDbContext>())
@@ -51,7 +50,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseCors();
+app.UseCors("CorsPolicy");
 
 app.UseResponseCaching();
 
