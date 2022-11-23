@@ -9,7 +9,9 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "..\UI\UI.csproj", "{AA39E4B6-3F3B-4234-83B2-F0EBB207DC26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSecondLevelCacheWithEasyCache", "..\EFSecondLevelCacheWithEasyCache\EFSecondLevelCacheWithEasyCache.csproj", "{EF9810EE-55A4-4598-A59A-540BA02A6DAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFSecondLevelCacheWithEasyCache", "..\EFSecondLevelCacheWithEasyCache\EFSecondLevelCacheWithEasyCache.csproj", "{EF9810EE-55A4-4598-A59A-540BA02A6DAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisDemo", "..\RedisDemo\RedisDemo.csproj", "{82D47862-AEF3-4B1A-93FF-32899B23BB0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{EF9810EE-55A4-4598-A59A-540BA02A6DAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF9810EE-55A4-4598-A59A-540BA02A6DAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF9810EE-55A4-4598-A59A-540BA02A6DAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82D47862-AEF3-4B1A-93FF-32899B23BB0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82D47862-AEF3-4B1A-93FF-32899B23BB0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82D47862-AEF3-4B1A-93FF-32899B23BB0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82D47862-AEF3-4B1A-93FF-32899B23BB0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
